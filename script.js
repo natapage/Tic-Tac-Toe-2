@@ -22,18 +22,43 @@ const WINNING_CONDITIONS = [
   [2, 4, 6],
 ];
 
-function announce(type) {
-  switch (type) {
-    case PLAYERO_WON:
-      announcer.innerHTML = 'Player <span class="playerO">0</span> Won!';
-      break;
-    case PLAYERX_WON:
-      announcer.innerHTML = 'Player <span class="playerX">X</span> Won!';
-      break;
-    case DRAW:
-      announcer.innerHTML = "Draw!";
+tiles.forEach((tile, index) => {
+  tile.addEventListener("click", () => userAction(tile, index));
+});
+
+resetButton.addEventListener("click", startGame);
+
+startGame();
+
+function startGame() {
+  board = Array(9).fill("");
+  isGameActive = true;
+  currentPlayer = "X";
+  announcer.classList.add("hide");
+
+  tiles.forEach((tile) => {
+    tile.innerText = "";
+    tile.classList.remove("playerX");
+    tile.classList.remove("playerO");
+  });
+}
+
+function userAction(tile, index) {
+  if (isValidAction(tile) && isGameActive) {
+    tile.innerText = currentPlayer;
+    tile.classList.add(`player${currentPlayer}`);
+    updateBoard(index);
+    handleResultValidation();
+    changePlayer();
   }
-  announcer.classList.remove("hide");
+}
+
+function isValidAction(tile) {
+  return tile.innerText === "";
+}
+
+function updateBoard(index) {
+  board[index] = currentPlayer;
 }
 
 function handleResultValidation() {
@@ -55,37 +80,6 @@ function handleResultValidation() {
   }
 }
 
-function userAction(tile, index) {
-  if (isValidAction(tile) && isGameActive) {
-    tile.innerText = currentPlayer;
-    tile.classList.add(`player${currentPlayer}`);
-    updateBoard(index);
-    handleResultValidation();
-    changePlayer();
-  }
-}
-
-function updateBoard(index) {
-  board[index] = currentPlayer;
-}
-
-function startGame() {
-  board = Array(9).fill("");
-  isGameActive = true;
-  currentPlayer = "X";
-  announcer.classList.add("hide");
-
-  tiles.forEach((tile) => {
-    tile.innerText = "";
-    tile.classList.remove("playerX");
-    tile.classList.remove("playerO");
-  });
-}
-
-function isValidAction(tile) {
-  return tile.innerText === "";
-}
-
 function changePlayer() {
   playerDisplay.classList.remove(`player${currentPlayer}`);
   currentPlayer = currentPlayer === "X" ? "O" : "X";
@@ -93,10 +87,16 @@ function changePlayer() {
   playerDisplay.classList.add(`player${currentPlayer}`);
 }
 
-tiles.forEach((tile, index) => {
-  tile.addEventListener("click", () => userAction(tile, index));
-});
-
-resetButton.addEventListener("click", startGame);
-
-startGame();
+function announce(type) {
+  switch (type) {
+    case PLAYERO_WON:
+      announcer.innerHTML = 'Player <span class="playerO">0</span> Won!';
+      break;
+    case PLAYERX_WON:
+      announcer.innerHTML = 'Player <span class="playerX">X</span> Won!';
+      break;
+    case DRAW:
+      announcer.innerHTML = "Draw!";
+  }
+  announcer.classList.remove("hide");
+}
